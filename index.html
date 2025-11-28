@@ -7,7 +7,1477 @@
     <!-- Load Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
     <!-- Load Chart.js for visualization --><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
     ...
+<!DOCTYPE html>
 
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Retirement Planner</title>
+
+    <!-- Load Tailwind CSS --><script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Load Chart.js for visualization --><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+    
+
+    <!-- Configure Inter font and custom colors --><style>
+
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+        body {
+
+            font-family: 'Inter', sans-serif;
+
+            background-color: #f7f9fb;
+
+        }
+
+        .card {
+
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.05);
+
+            transition: transform 0.3s ease;
+
+        }
+
+        .input-group label {
+
+            font-weight: 500;
+
+            color: #333;
+
+        }
+
+
+
+        /* --- RED BRANDING OVERRIDES --- */
+
+        .text-indigo-700 { color: #DC2626; } /* Primary Red-600 */
+
+        .text-indigo-600 { color: #EF4444; } /* Lighter Red-500 */
+
+        .bg-indigo-500 { background-color: #EF4444; } /* Background Red-500 */
+
+        .border-indigo-400 { border-color: #F87171; } /* Lighter Red-400 for contrast line */
+
+        .focus\:ring-indigo-500:focus { --tw-ring-color: #EF4444; }
+
+        .focus\:border-indigo-500:focus { border-color: #EF4444; }
+
+        /* --- END RED BRANDING --- */
+
+    </style>
+
+</head>
+
+<body class="p-4 md:p-8">
+
+
+
+    <div class="max-w-6xl mx-auto">
+
+        <header class="text-center mb-10">
+
+            <h1 class="text-4xl font-extrabold text-indigo-700">🚀 Student Retirement Navigator</h1>
+
+            <p class="text-lg text-gray-600 mt-2">Model your financial future across different risk scenarios.</p>
+
+        </header>
+
+
+
+        <main class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+            <!-- 1. Input Panel (Fixed on desktop, scrolls on mobile) --><div class="lg:col-span-1 bg-white p-6 rounded-xl card sticky top-4 h-fit border border-gray-100">
+
+                <h2 class="text-2xl font-bold mb-6 text-indigo-600">Your Financial Profile</h2>
+
+                <form id="retirement-form" class="space-y-5">
+
+                    
+
+                    <!-- Basic Inputs --><div class="input-group">
+
+                        <label for="currentAge" class="block text-sm">Current Age (Years)</label>
+
+                        <input type="number" id="currentAge" value="20" min="18" max="70" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label for="retireAge" class="block text-sm">Expected Retirement Age (Years)</label>
+
+                        <input type="number" id="retireAge" value="50" min="50" max="80" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label for="monthlyExpenses" class="block text-sm">Current Monthly Expenses ($)</label>
+
+                        <input type="number" id="monthlyExpenses" value="5000" min="100" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label for="inflationRate" class="block text-sm">Avg Annual Inflation Rate (%)</label>
+
+                        <input type="number" id="inflationRate" value="3.0" step="0.1" min="0" max="10" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label for="postRetireReturn" class="block text-sm">Post-Retirement Return (%)</label>
+
+                        <input type="number" id="postRetireReturn" value="5.0" step="0.1" min="0" max="15" class="w-full mt-1 p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500">
+
+                        <p class="text-xs text-gray-500 mt-1">Expected return on funds *after* you retire.</p>
+
+                    </div>
+
+
+
+                    <!-- Risk Scenarios Input Table --><h3 class="text-xl font-semibold mt-8 pt-4 border-t text-indigo-600">Investment Scenarios</h3>
+
+                    <p class="text-xs text-gray-500 mt-1">Leave Monthly Investment OR Target Savings blank. If both are filled, Target Savings is prioritized.</p>
+
+                    <div id="risk-scenarios" class="space-y-4">
+
+                        <!-- Scenario inputs populated by JS --></div>
+
+
+
+                </form>
+
+            </div>
+
+
+
+            <!-- 2. Results Panel --><div class="lg:col-span-2 space-y-8">
+
+                
+
+                <!-- Fixed Projection Card --><div class="bg-indigo-500 text-white p-6 rounded-xl card">
+
+                    <h2 class="text-2xl font-semibold mb-2">Inflation-Adjusted Goal</h2>
+
+                    <p class="text-sm opacity-90">What your current monthly expenses will cost at your retirement age.</p>
+
+                    
+
+                    <!-- Monthly Target Expense --><div class="mt-4 flex items-center justify-between pb-4">
+
+                        <p class="text-5xl font-extrabold" id="retirement-monthly-expense">$0.00</p>
+
+                        <p class="text-lg opacity-80">Monthly Target</p>
+
+                    </div>
+
+                    
+
+                    <!-- Combined Fund Depletion Age --><div class="mt-4 pt-4 border-t border-indigo-400">
+
+                        <h3 class="text-lg font-semibold mb-1" id="combined-depletion-title">Combined Age Funds Deplete (Total Plan)</h3>
+
+                        <p class="text-3xl font-bold" id="depletion-age-range">N/A</p>
+
+                        <p class="text-xs opacity-70 mt-1" id="combined-depletion-subtitle">Calculating the sum of all investment funds...</p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- Comparative Results --><h2 class="text-3xl font-bold text-gray-800">Scenario Outcomes</h2>
+
+                <div id="results-container" class="space-y-6">
+
+                    <!-- Dynamic results cards will be injected here --></div>
+
+
+
+            </div>
+
+        </main>
+
+        
+
+        <!-- 3. Asset Movement Chart --><section class="lg:col-span-3 mt-10 p-6 bg-white rounded-xl card">
+
+            <h2 class="text-2xl font-bold mb-4 text-indigo-600">Combined Asset Trajectory Over Time</h2>
+
+            <p class="text-sm text-gray-600 mb-4">This chart shows your total accumulated wealth (across all scenarios) from your current age until the fund is projected to deplete.</p>
+
+            <div class="h-96">
+
+                <canvas id="assetChart"></canvas>
+
+            </div>
+
+        </section>
+
+    </div>
+
+
+
+    <script>
+
+        // Global variable for the chart instance
+
+        let assetChartInstance = null;
+
+        
+
+        // --- Financial Formulas (Core Logic) ---
+
+
+
+        /**
+
+         * Calculates Future Monthly Expenses based on compounded inflation.
+
+         * @returns {number} - Future monthly expense ($)
+
+         */
+
+        const calculateInflationAdjustedExpense = (currentExpense, annualInflationRate, yearsToRetirement) => {
+
+            if (yearsToRetirement < 0) return 0;
+
+            return currentExpense * Math.pow((1 + annualInflationRate), yearsToRetirement);
+
+        };
+
+
+
+        /**
+
+         * Calculates the Future Value of an Annuity (Total Savings at Retirement).
+
+         * @returns {number} - Total accumulated savings ($)
+
+         */
+
+        const calculateFVA = (monthlyPayment, monthlyRate, totalMonths) => {
+
+            if (monthlyRate === 0) {
+
+                return monthlyPayment * totalMonths;
+
+            }
+
+            const numerator = Math.pow(1 + monthlyRate, totalMonths) - 1;
+
+            return monthlyPayment * (numerator / monthlyRate);
+
+        };
+
+
+
+        /**
+
+         * Calculates the Required Monthly Payment (PMT) to reach a Future Value (Target Savings).
+
+         * @returns {number} - Required monthly investment ($)
+
+         */
+
+        const calculateRequiredPayment = (targetSavings, monthlyRate, totalMonths) => {
+
+            if (totalMonths <= 0) return targetSavings;
+
+            if (monthlyRate === 0) {
+
+                return targetSavings / totalMonths;
+
+            }
+
+            const denominator = Math.pow(1 + monthlyRate, totalMonths) - 1;
+
+            if (denominator === 0) return Infinity;
+
+            return targetSavings * (monthlyRate / denominator);
+
+        };
+
+
+
+
+
+        /**
+
+         * Calculates the number of periods (months) a fund will last (NPER/Fund Duration).
+
+         * @returns {number} - Total months the fund lasts
+
+         */
+
+        const calculateFundDurationInMonths = (pv, pmt, monthlyRate) => {
+
+            if (pmt <= 0) return Infinity;
+
+            if (monthlyRate === 0) {
+
+                return pv / pmt;
+
+            }
+
+
+
+            const term = (pv * monthlyRate) / pmt;
+
+            if (term >= 1) {
+
+                // Funds last forever (or at least beyond the model's horizon)
+
+                return Infinity;
+
+            }
+
+
+
+            const numerator = Math.log(1 - term);
+
+            const denominator = Math.log(1 + monthlyRate);
+
+            
+
+            // Formula solves for negative NPER, so we take the absolute value.
+
+            return -1 * (numerator / denominator);
+
+        };
+
+        
+
+        /**
+
+         * --- This function is now DEPRECATED as we use monthly/yearly step stabilization ---
+
+         */
+
+        const calculateAnnualNetWithdrawalFactor = (annualRate, pmt) => {
+
+            const monthlyRate = annualRate / 12;
+
+            let totalWithdrawals = 0;
+
+            let currentBalance = 1; // Start with $1 to find the factor
+
+            
+
+            for (let i = 0; i < 12; i++) {
+
+                currentBalance = currentBalance * (1 + monthlyRate);
+
+                totalWithdrawals += pmt; 
+
+            }
+
+            return (Math.pow(1 + monthlyRate, 12));
+
+        };
+
+        
+
+        // --- UI Setup and Rendering ---
+
+
+
+        // Risk scenario configuration data
+
+        const riskProfiles = [
+
+            { id: 'low', name: 'Low Risk', defaultReturn: 4.0, color: 'green-500', bgColor: 'green-50' },
+
+            { id: 'medium', name: 'Medium Risk', defaultReturn: 7.0, color: 'blue-500', bgColor: 'blue-50' },
+
+            { id: 'high', name: 'High Risk', defaultReturn: 10.0, color: 'yellow-500', bgColor: 'yellow-50' },
+
+            { id: 'superHigh', name: 'Super High Risk', defaultReturn: 15.0, color: 'red-500', bgColor: 'red-50' },
+
+        ];
+
+
+
+        // Function to format numbers as currency
+
+        const formatCurrency = (amount) => new Intl.NumberFormat('en-US', {
+
+            style: 'currency',
+
+            currency: 'USD',
+
+            minimumFractionDigits: 0
+
+        }).format(Math.max(0, amount));
+
+        
+
+        // Function to format larger numbers with two decimal places
+
+        const formatLargeCurrency = (amount) => new Intl.NumberFormat('en-US', {
+
+            style: 'currency',
+
+            currency: 'USD',
+
+            minimumFractionDigits: 2
+
+        }).format(Math.max(0, amount));
+
+
+
+
+
+        // Function to convert months to years and months string
+
+        const formatDuration = (totalMonths) => {
+
+            if (totalMonths === Infinity) return "Forever";
+
+            if (totalMonths === 0) return "0 Years";
+
+
+
+            const years = Math.floor(totalMonths / 12);
+
+            const months = Math.round(totalMonths % 12);
+
+            // Show months only if not close to zero years
+
+            if (years === 0 && months > 0) return `${months} Months`;
+
+            return `${years} Years, ${months} Months`;
+
+        };
+
+        
+
+        // Function to calculate the age the funds are depleted
+
+        const calculateDepletionAge = (retireAge, durationMonths) => {
+
+            if (durationMonths === Infinity) return Infinity; // Return Infinity for easy comparison
+
+            const durationYears = durationMonths / 12;
+
+            return Math.round(retireAge + durationYears);
+
+        }
+
+
+
+        /**
+
+         * Renders the input fields for the four risk scenarios.
+
+         */
+
+        const renderInputScenarios = () => {
+
+            const container = document.getElementById('risk-scenarios');
+
+            container.innerHTML = riskProfiles.map(p => `
+
+                <div class="p-3 bg-gray-50 rounded-lg border border-gray-200">
+
+                    <h4 class="font-semibold text-sm mb-2 text-${p.id === 'low' ? 'green-600' : p.id === 'medium' ? 'blue-600' : p.id === 'high' ? 'yellow-600' : 'red-600'}">${p.name}</h4>
+
+                    <div class="grid grid-cols-3 gap-3">
+
+                        <div>
+
+                            <label for="${p.id}Return" class="block text-xs text-gray-600">Annual Return (%)</label>
+
+                            <input type="number" id="${p.id}Return" value="${p.defaultReturn}" step="0.1" min="0" max="25"
+
+                                class="w-full mt-1 p-2 border border-gray-300 rounded-lg text-sm" data-id="${p.id}" oninput="updateCalculations()">
+
+                        </div>
+
+                        <div>
+
+                            <label for="${p.id}Invest" class="block text-xs text-gray-600">Monthly Investment ($)</label>
+
+                            <input type="number" id="${p.id}Invest" value="200" min="0"
+
+                                class="w-full mt-1 p-2 border border-gray-300 rounded-lg text-sm" data-id="${p.id}" oninput="updateCalculations()">
+
+                        </div>
+
+                        <div>
+
+                            <label for="${p.id}Target" class="block text-xs text-gray-600">Target Savings ($)</label>
+
+                            <input type="number" id="${p.id}Target" value="" min="0" placeholder="Optional Goal"
+
+                                class="w-full mt-1 p-2 border border-gray-300 rounded-lg text-sm" data-id="${p.id}" oninput="updateCalculations()">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `).join('');
+
+        };
+
+
+
+        /**
+
+         * Simulates the combined asset balance.
+
+         * @returns {{labels: Array<string>, data: Array<number>}} Chart data
+
+         */
+
+       const generateAssetTrajectory = (
+
+    combinedAnnualRate, 
+
+    totalAnnualInvestment, 
+
+    yearsToRetirement, 
+
+    annualExpense, 
+
+    postRetireAnnualRate, 
+
+    combinedDurationMonths, 
+
+    currentAge,
+
+    combinedTotalSavings,
+
+    combinedDepletionAge // still passed, not strictly needed
+
+) => {
+
+    let balance = 0; 
+
+    const labels = [];
+
+    const data = [];
+
+    const retirementYear = currentAge + yearsToRetirement;
+
+    
+
+    // --- CONFIG ---
+
+    const MAX_AGE_CAP = 100;
+
+    const yearsPostRetire = (combinedDurationMonths === Infinity) 
+
+        ? MAX_AGE_CAP - retirementYear 
+
+        : (combinedDurationMonths / 12);
+
+    
+
+    // --- 1. ACCUMULATION PHASE (YEARLY STEPS) ---
+
+    const accumulationGrowthFactor = 1 + combinedAnnualRate;
+
+
+
+    let accumulationAnnualEquivalent = 0;
+
+    if (yearsToRetirement > 0 && combinedAnnualRate > 0) {
+
+        const FVA_factor = (Math.pow(1 + combinedAnnualRate, yearsToRetirement) - 1) / combinedAnnualRate;
+
+        if (FVA_factor > 0) {
+
+            accumulationAnnualEquivalent = combinedTotalSavings / FVA_factor;
+
+        }
+
+    } else if (yearsToRetirement > 0 && combinedAnnualRate === 0) {
+
+        accumulationAnnualEquivalent = combinedTotalSavings / yearsToRetirement;
+
+    }
+
+
+
+    if (accumulationAnnualEquivalent === Infinity || isNaN(accumulationAnnualEquivalent)) {
+
+        accumulationAnnualEquivalent = totalAnnualInvestment; 
+
+    }
+
+    
+
+    for (let year = 0; year <= yearsToRetirement; year++) {
+
+        let age = currentAge + year;
+
+        
+
+        if (year > 0) {
+
+            balance = balance * accumulationGrowthFactor;
+
+            balance = balance + accumulationAnnualEquivalent;
+
+        }
+
+        
+
+        labels.push(`Age ${Math.round(age)}`);
+
+        data.push(balance);
+
+    }
+
+
+
+    // Force the peak at retirement to equal the combined FVA
+
+    balance = combinedTotalSavings;
+
+    if (data.length > 0) {
+
+        data[data.length - 1] = combinedTotalSavings;
+
+    }
+
+    
+
+    // --- 2. DEPLETION PHASE (YEARLY STEPS) ---
+
+    let currentYearBalance = balance;
+
+    let currentAgeYear = retirementYear;
+
+    const annualGrowthFactor = 1 + postRetireAnnualRate;
+
+    let depletionPointReached = false;
+
+
+
+    if (combinedDurationMonths === Infinity) {
+
+        // Self-sustaining: just project until MAX_AGE_CAP
+
+        for (let year = 1; year <= yearsPostRetire && currentAgeYear < MAX_AGE_CAP; year++) {
+
+            currentAgeYear++;
+
+            currentYearBalance = currentYearBalance * annualGrowthFactor - annualExpense;
+
+            labels.push(`Age ${Math.round(currentAgeYear)}`);
+
+            data.push(Math.max(0, currentYearBalance));
+
+        }
+
+    } else {
+
+        // Finite: simulate until depletion
+
+        for (let year = 1; year <= yearsPostRetire && currentAgeYear < MAX_AGE_CAP; year++) {
+
+            currentAgeYear++;
+
+
+
+            let endOfYearBalance = currentYearBalance * annualGrowthFactor - annualExpense;
+
+            if (endOfYearBalance <= 0) {
+
+                currentYearBalance = 0;
+
+                depletionPointReached = true;
+
+            } else {
+
+                currentYearBalance = endOfYearBalance;
+
+            }
+
+
+
+            labels.push(`Age ${Math.round(currentAgeYear)}`);
+
+            data.push(currentYearBalance);
+
+
+
+            if (depletionPointReached) break;
+
+        }
+
+
+
+        // 🔴 Ensure final point is at y = 0 and age is rounded UP
+
+        const retireAgeCalc = currentAge + yearsToRetirement;
+
+        const trueDepletionAge = retireAgeCalc + combinedDurationMonths / 12;
+
+        const roundedUpAge = Math.ceil(trueDepletionAge);
+
+
+
+        const lastAgeLabel = labels[labels.length - 1] || '';
+
+        const lastAge = parseFloat(lastAgeLabel.replace('Age ', '')) || retireAgeCalc;
+
+
+
+        if (roundedUpAge > lastAge) {
+
+            labels.push(`Age ${roundedUpAge}`);
+
+            data.push(0);
+
+        } else {
+
+            // If last label is already at/after that age, force it to 0
+
+            data[data.length - 1] = 0;
+
+        }
+
+    }
+
+    
+
+    // If still infinite and we haven't reached MAX_AGE_CAP, cap it visually
+
+  // Final check on chart max age label (for infinite cases)
+
+if (
+
+    labels.length > 0 &&
+
+    parseFloat(labels[labels.length - 1].replace('Age ', '')) < MAX_AGE_CAP &&
+
+    combinedDurationMonths === Infinity
+
+) {
+
+    labels.push(`Age ${MAX_AGE_CAP} (Max)`);
+
+    data.push(currentYearBalance);
+
+}
+
+
+
+// ✅ Force the LAST point to be exactly 0 at the displayed depletion age
+
+if (combinedDurationMonths !== Infinity && combinedDurationMonths > 0) {
+
+    const finalAgeLabel = `Age ${combinedDepletionAge}`; // e.g. 58
+
+
+
+    if (labels.length === 0) {
+
+        // safety, but should not happen
+
+        labels.push(finalAgeLabel);
+
+        data.push(0);
+
+    } else {
+
+        labels[labels.length - 1] = finalAgeLabel; // "Age 58"
+
+        data[data.length - 1] = 0;                 // $0 balance
+
+    }
+
+}
+
+
+
+return { labels, data };
+
+
+
+};
+
+
+
+
+
+        /**
+
+         * Renders the line chart using Chart.js
+
+         * (FIXED version: x-axis min/max use LABELS, not numeric indices)
+
+         */
+
+        const renderChart = (chartData, retireAge, depletionAge) => {
+
+            const ctx = document.getElementById('assetChart').getContext('2d');
+
+
+
+            // Destroy old chart instance if it exists
+
+            if (assetChartInstance) {
+
+                assetChartInstance.destroy();
+
+            }
+
+
+
+            const currentAgeVal = parseFloat(document.getElementById('currentAge').value) || 0;
+
+            const minAge = Math.round(currentAgeVal);
+
+
+
+            const MAX_AGE_CAP = 100;
+
+            const suggestedMaxAge = (depletionAge > 80 || depletionAge === Infinity)
+
+                ? MAX_AGE_CAP
+
+                : depletionAge;
+
+
+
+            // For a category scale, min & max must be label strings
+
+            const minChartLabel = `Age ${minAge}`;
+
+            let maxChartLabel;
+
+            if (depletionAge === Infinity) {
+
+                maxChartLabel = chartData.labels[chartData.labels.length - 1];
+
+            } else {
+
+                maxChartLabel = `Age ${Math.round(suggestedMaxAge)}`;
+
+            }
+
+
+
+            // Retirement marker index
+
+            const retirementLabel = `Age ${retireAge}`;
+
+            let retirementIndex = chartData.labels.findIndex(label => label === retirementLabel);
+
+            if (retirementIndex === -1) {
+
+                retirementIndex = chartData.labels.length - 1;
+
+            }
+
+
+
+            assetChartInstance = new Chart(ctx, {
+
+                type: 'line',
+
+                data: {
+
+                    labels: chartData.labels,
+
+                    datasets: [{
+
+                        label: 'Combined Asset Balance ($)',
+
+                        data: chartData.data,
+
+                        borderColor: '#DC2626', /* Primary Red-600 */
+
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)', /* Lighter Red fill */
+
+                        tension: 0.3,
+
+                        pointRadius: 3,
+
+                        pointHoverRadius: 5,
+
+                        fill: true,
+
+                    }]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    scales: {
+
+                        x: {
+
+                            title: {
+
+                                display: true,
+
+                                text: 'Age (Years)'
+
+                            },
+
+                            ticks: {
+
+                                maxTicksLimit: 15, 
+
+                            },
+
+                            // IMPORTANT: use labels, not numeric indices
+
+                            min: minChartLabel,
+
+                            max: maxChartLabel,
+
+                            
+
+                            // Add a marker line for retirement age (label annotation)
+
+                            afterFit: function(scale) {
+
+                                if (retirementIndex !== -1) {
+
+                                    scale.options.ticks.callback = function(val, index) {
+
+                                        const label = this.getLabelForValue(val);
+
+                                        if (index === retirementIndex) {
+
+                                            return `${label} (Retirement)`;
+
+                                        }
+
+                                        return label;
+
+                                    };
+
+                                }
+
+                            }
+
+                        },
+
+                        y: {
+
+                            title: {
+
+                                display: true,
+
+                                text: 'Asset Balance ($)'
+
+                            },
+
+                            ticks: {
+
+                                callback: function(value) {
+
+                                    return formatCurrency(value);
+
+                                }
+
+                            },
+
+                            beginAtZero: true
+
+                        }
+
+                    }
+
+                }
+
+            });
+
+        };
+
+
+
+
+
+        /**
+
+         * The main calculation and rendering function, triggered on any input change.
+
+         */
+
+        const updateCalculations = () => {
+
+            const currentAge = parseFloat(document.getElementById('currentAge').value) || 0;
+
+            const retireAge = parseFloat(document.getElementById('retireAge').value) || 0;
+
+            const monthlyExpenses = parseFloat(document.getElementById('monthlyExpenses').value) || 0;
+
+            const inflationRate = parseFloat(document.getElementById('inflationRate').value) / 100 || 0;
+
+            const postRetireReturn = parseFloat(document.getElementById('postRetireReturn').value) / 100 || 0;
+
+
+
+            const yearsToRetirement = Math.max(0, retireAge - currentAge);
+
+            const totalMonths = yearsToRetirement * 12;
+
+
+
+            // --- 1. Fixed Projection (Inflation Adjusted Expense) ---
+
+            const futureMonthlyExpense = calculateInflationAdjustedExpense(
+
+                monthlyExpenses,
+
+                inflationRate,
+
+                yearsToRetirement
+
+            );
+
+
+
+            document.getElementById('retirement-monthly-expense').textContent = formatCurrency(futureMonthlyExpense);
+
+
+
+            // --- 2. Comparative Scenario Results ---
+
+            const resultsContainer = document.getElementById('results-container');
+
+            resultsContainer.innerHTML = '';
+
+            
+
+            let maxDurationMonths = 0; // For visualization scaling
+
+            let combinedTotalSavings = 0; 
+
+            let totalAnnualReturns = 0; 
+
+            let totalCalculatedMonthlyInvestment = 0; // FIX: New variable for sum of used monthly contributions
+
+            let activeScenarioCount = 0; 
+
+
+
+            const scenarioResults = riskProfiles.map(p => {
+
+                const annualReturn = parseFloat(document.getElementById(`${p.id}Return`).value) / 100 || 0;
+
+                const monthlyInvestmentInput = parseFloat(document.getElementById(`${p.id}Invest`).value) || 0;
+
+                const targetSavingsInput = parseFloat(document.getElementById(`${p.id}Target`).value) || 0;
+
+
+
+                const monthlyRate = annualReturn / 12;
+
+                const postRetireMonthlyRate = postRetireReturn / 12;
+
+                
+
+                let totalSavings;
+
+                let calculationMode;
+
+                let monthlyInvestmentUsed;
+
+
+
+                if (targetSavingsInput > 0) {
+
+                    // Mode B: Goal Seeking (Solve for Required Monthly Investment)
+
+                    monthlyInvestmentUsed = calculateRequiredPayment(targetSavingsInput, monthlyRate, totalMonths);
+
+                    totalSavings = calculateFVA(monthlyInvestmentUsed, monthlyRate, totalMonths); // Recalculate FVA using the required payment
+
+                    calculationMode = "Goal Seeking";
+
+                } else {
+
+                    // Mode A: Projection (Solve for Total Savings)
+
+                    monthlyInvestmentUsed = monthlyInvestmentInput;
+
+                    totalSavings = calculateFVA(monthlyInvestmentUsed, monthlyRate, totalMonths);
+
+                    calculationMode = "Projection";
+
+                }
+
+
+
+                // ACCUMULATE FOR COMBINED CHART/SUMMARY
+
+                // Only count scenarios where actual investment or target savings is calculated/used.
+
+                if (monthlyInvestmentUsed > 0 || (targetSavingsInput > 0 && totalMonths > 0)) {
+
+                    activeScenarioCount++;
+
+                    totalAnnualReturns += annualReturn;
+
+                }
+
+                
+
+                combinedTotalSavings += totalSavings; 
+
+                totalCalculatedMonthlyInvestment += monthlyInvestmentUsed; // FIX: Sum the calculated monthly investment
+
+
+
+                // NPER: Fund Duration
+
+                const durationMonths = calculateFundDurationInMonths(
+
+                    totalSavings,
+
+                    futureMonthlyExpense,
+
+                    postRetireMonthlyRate
+
+                );
+
+                
+
+                if (durationMonths !== Infinity) {
+
+                    maxDurationMonths = Math.max(maxDurationMonths, durationMonths);
+
+                }
+
+                
+
+                const durationText = formatDuration(durationMonths);
+
+
+
+                let statusText;
+
+                let statusColor;
+
+                
+
+                if (durationMonths === Infinity) {
+
+                    statusText = "Self-Sustaining!";
+
+                    statusColor = "text-green-600";
+
+                } else if (durationMonths / 12 >= 30) {
+
+                    statusText = "Excellent (30+ Years)";
+
+                    statusColor = "text-emerald-600";
+
+                } else if (durationMonths / 12 >= 15) {
+
+                    statusText = "Good (15+ Years)";
+
+                    statusColor = "text-yellow-600";
+
+                } else {
+
+                    statusText = "Needs Review (< 15 Years)";
+
+                    statusColor = "text-red-600";
+
+                }
+
+                
+
+                // Assign a specific color based on risk profile ID for the bar
+
+                let scenarioColorClass;
+
+                switch(p.id) {
+
+                    case 'low': scenarioColorClass = 'bg-green-600'; break;
+
+                    case 'medium': scenarioColorClass = 'bg-blue-600'; break;
+
+                    case 'high': scenarioColorClass = 'bg-yellow-600'; break;
+
+                    case 'superHigh': scenarioColorClass = 'bg-red-600'; break;
+
+                    default: scenarioColorClass = 'bg-gray-400';
+
+                }
+
+
+
+                return {
+
+                    ...p,
+
+                    totalSavings,
+
+                    monthlyInvestmentUsed,
+
+                    calculationMode,
+
+                    durationMonths,
+
+                    durationText,
+
+                    statusText,
+
+                    statusColor,
+
+                    scenarioColorClass
+
+                };
+
+            });
+
+            
+
+            // --- 3. Calculate and Update Combined Depletion Age ---
+
+            const postRetireMonthlyRate = postRetireReturn / 12;
+
+            const combinedDurationMonths = calculateFundDurationInMonths(
+
+                combinedTotalSavings,
+
+                futureMonthlyExpense,
+
+                postRetireMonthlyRate
+
+            );
+
+            const combinedDepletionAge = calculateDepletionAge(retireAge, combinedDurationMonths);
+
+            
+
+            const depletionRangeElement = document.getElementById('depletion-age-range');
+
+            const combinedDepletionSubtitle = document.getElementById('combined-depletion-subtitle');
+
+
+
+            if (combinedDurationMonths === Infinity) {
+
+                depletionRangeElement.textContent = "Never";
+
+                combinedDepletionSubtitle.textContent = "Your total combined investment is self-sustaining!";
+
+            } else {
+
+                depletionRangeElement.textContent = combinedDepletionAge;
+
+                combinedDepletionSubtitle.textContent = `Funds depleted at age ${combinedDepletionAge} (${formatDuration(combinedDurationMonths)} post-retirement).`;
+
+            }
+
+
+
+
+
+            // Render individual results cards
+
+            scenarioResults.forEach(r => {
+
+                const durationPercent = r.durationMonths === Infinity ? 100 : Math.min(100, (r.durationMonths / maxDurationMonths) * 100);
+
+                const durationWidth = durationPercent > 0 ? `${durationPercent}%` : '1px';
+
+                
+
+                resultsContainer.innerHTML += `
+
+                    <div class="bg-white p-6 rounded-xl card border border-gray-100 shadow-md">
+
+                        <div class="flex items-center justify-between mb-4">
+
+                            <h3 class="text-xl font-bold ${r.statusColor}">${r.name}</h3>
+
+                            <span class="text-sm font-medium ${r.statusColor}">${r.statusText}</span>
+
+                        </div>
+
+                        
+
+                        <div class="grid grid-cols-3 gap-4 text-sm mb-6">
+
+                            
+
+                            <!-- Column 1: Savings/Target -->
+
+                            <div class="bg-gray-50 p-3 rounded-lg">
+
+                                <p class="text-xs text-gray-500">${r.calculationMode === "Projection" ? 'Total Savings at Retirement' : 'Target Savings (Goal)'}</p>
+
+                                <p class="text-lg font-semibold text-gray-800">${formatLargeCurrency(r.totalSavings)}</p>
+
+                            </div>
+
+                            
+
+                            <!-- Column 2: Monthly Investment/Required Investment -->
+
+                            <div class="bg-gray-50 p-3 rounded-lg">
+
+                                <p class="text-xs text-gray-500">${r.calculationMode === "Projection" ? 'Monthly Investment Used' : 'Required Monthly Investment'}</p>
+
+                                <p class="text-lg font-semibold text-gray-800">${formatCurrency(r.monthlyInvestmentUsed)}</p>
+
+                            </div>
+
+                            
+
+                            <!-- Column 3: YEARS TO DEPLETE (UPDATED) -->
+
+                            <div class="bg-gray-50 p-3 rounded-lg">
+
+                                <p class="text-xs text-gray-500">Years to Deplete (Duration)</p>
+
+                                <p class="text-lg font-semibold text-gray-800">${r.durationText}</p>
+
+                            </div>
+
+
+
+                        </div>
+
+
+
+                        <!-- Visualization Bar -->
+
+                        <div class="pt-2">
+
+                            <p class="text-xs text-gray-500 mb-1">Duration Visualizer (Relative)</p>
+
+                            <div class="w-full bg-gray-200 rounded-full h-3">
+
+                                <div class="h-3 rounded-full ${r.scenarioColorClass}" style="width: ${durationWidth};"></div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            });
+
+            
+
+            // --- 4. Generate and Render Chart ---
+
+            let combinedAnnualRate = 0;
+
+            // Use activeScenarioCount to calculate the correct average rate
+
+            if (activeScenarioCount > 0) {
+
+                 combinedAnnualRate = totalAnnualReturns / activeScenarioCount;
+
+            } else {
+
+                 // Prevent division by zero if all fields are empty
+
+                 combinedAnnualRate = 0;
+
+            }
+
+            
+
+            const totalAnnualInvestment = totalCalculatedMonthlyInvestment * 12; // Annualize the contributions
+
+
+
+            if (combinedDurationMonths > 0 || combinedDurationMonths === Infinity) {
+
+                const chartData = generateAssetTrajectory(
+
+                    combinedAnnualRate, // Annual Rate
+
+                    totalAnnualInvestment, // Annual Investment
+
+                    yearsToRetirement,
+
+                    futureMonthlyExpense * 12, // Annual Expense
+
+                    postRetireReturn, // Annual Post-Retire Return
+
+                    combinedDurationMonths,
+
+                    currentAge,
+
+                    combinedTotalSavings, // CRITICAL: Pass the mathematically precise peak FVA
+
+                    combinedDepletionAge // CRITICAL: Pass the rounded depletion age
+
+                );
+
+                // Pass the rounded depletion age to the render function
+
+                renderChart(chartData, retireAge, combinedDepletionAge);
+
+            } else {
+
+                 // Clear the chart if duration is zero/invalid or no investment
+
+                 if (assetChartInstance) {
+
+                    assetChartInstance.destroy();
+
+                 }
+
+            }
+
+        };
+
+
+
+        // --- Initialization ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            renderInputScenarios();
+
+            
+
+            // Attach event listeners to update calculations on input change
+
+            const form = document.getElementById('retirement-form');
+
+            form.addEventListener('input', updateCalculations);
+
+
+
+            // Initial calculation run
+
+            updateCalculations();
+
+        });
+
+    </script>
+
+</body>
+
+</html>
 
 
 
