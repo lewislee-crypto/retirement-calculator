@@ -12,23 +12,35 @@
 
     <!-- Configure Inter font and custom colors --><style>
 
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+       <!-- Configure Inter font and custom colors -->
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 
-        body {
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f7f9fb;
+  }
 
-            font-family: 'Inter', sans-serif;
+  .card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease;
+  }
 
-            background-color: #f7f9fb;
+  .input-group label {
+    font-weight: 500;
+    color: #333;
+  }
 
-        }
+  /* --- RED BRANDING OVERRIDES --- */
+  .text-indigo-700 { color: #DC2626; }        /* Primary Red-600 */
+  .text-indigo-600 { color: #EF4444; }        /* Lighter Red-500 */
+  .bg-indigo-500   { background-color: #EF4444; } /* Background Red-500 */
+  .border-indigo-400 { border-color: #F87171; }   /* Lighter Red-400 for contrast line */
+  .focus\:ring-indigo-500:focus { --tw-ring-color: #EF4444; }
+  .focus\:border-indigo-500:focus { border-color: #EF4444; }
+  /* --- END RED BRANDING --- */
+</style>
 
-        .card {
-
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.05);
-
-            transition: transform 0.3s ease;
-
-        }
 
         .input-group label {
 
